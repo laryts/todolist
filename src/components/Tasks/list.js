@@ -20,7 +20,7 @@ class List extends Component {
   }
 
   handleItemClick = ({ _id, description, done, createdAt }) => {
-    // Checkbox update  state
+    // Checkbox update state
     this.setState({
       list: this.state.list.map(todo =>
         todo._id === _id ? { _id, description, done: !done, createdAt } : todo
@@ -42,9 +42,14 @@ class List extends Component {
     }
   };
 
-  handleDelete = index => {
-    console.info("todo: remove todo at index", index);
-    // deletion logic... keep in mind that using index as key properties on jsx could breaks the correct functioning of this component.
+  handleDelete = id => {
+    // Delete item from state
+    this.setState({
+      list: this.state.list.filter(todo => todo._id !== id)
+    });
+
+    // Delete item from API
+    api.delete(`/todos/${id}`);
   };
 
   render() {
@@ -86,14 +91,17 @@ class List extends Component {
                     className="dropdown-menu dropdown-menu-right"
                     aria-labelledby="dropdownMenuButton"
                   >
-                    <button onClick={this.handleEdit} className="dropdown-item">
-                      Edit
-                    </button>
                     <button
-                      onClick={this.handleDelete}
+                      onClick={() => this.handleEdit(todo._id)}
                       className="dropdown-item"
                     >
-                      Remove
+                      Editar
+                    </button>
+                    <button
+                      onClick={() => this.handleDelete(todo._id)}
+                      className="dropdown-item"
+                    >
+                      Remover
                     </button>
                   </div>
                 </div>
