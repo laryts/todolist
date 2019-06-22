@@ -1,0 +1,28 @@
+@import "../../App.scss";
+
+section#todo-list {
+  padding: var(--headersize) 0;
+  @extend %centerbox;
+  display: inherit;
+  .list-group {
+    display: flex;
+    justify-content: space-between;
+    flex-direction: column;
+    .list-group-item {
+      margin: 5px 10px;
+      width: inherit;
+      .custom-checkbox {
+        padding-right: 15px;
+        .custom-control-label.disabled {
+          text-decoration: line-through;
+        }
+        .title-todo {
+          font-size: var(--fontsize-medium);
+        }
+      }
+    }
+    .dropdown-toggle::after {
+      content: none;
+    }
+  }
+}

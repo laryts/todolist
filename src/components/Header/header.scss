@@ -1,0 +1,35 @@
+:root {
+  --headersize: 72px;
+}
+
+header#main-header {
+  background: var(--hb-gradient);
+  height: var(--headersize);
+  color: var(--white);
+  border-bottom: 1px solid #ddd;
+  position: fixed;
+  width: 100%;
+  z-index: 100;
+
+  .header-content {
+    width: 100%;
+    max-width: 980px;
+    margin: 0 auto;
+    height: var(--headersize);
+    padding: 0 15px;
+    font-size: var(--fontsize-big);
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    .app-title {
+      text-transform: uppercase;
+      font-weight: bolder;
+      svg {
+        font-size: 16px;
+        margin: 0 3px;
+      }
+    }
+  }
+}

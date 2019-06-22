@@ -1,0 +1,37 @@
+@import "../../App.scss";
+
+:root {
+  --footersize: 50px;
+}
+
+footer#main-footer {
+  @extend %centerbox;
+  position: fixed;
+  width: 100%;
+  bottom: 0;
+  background: #2870b2;
+  color: var(--light);
+  max-width: 100%;
+  z-index: 100;
+
+  .footer-content {
+    width: 100%;
+    max-width: 300px;
+    margin: 0 auto;
+    height: var(--footersize);
+    padding: 0 15px;
+    font-size: var(--fontsize-big);
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    a {
+      color: #fff;
+      text-transform: uppercase;
+      &:hover {
+        text-decoration: none;
+      }
+    }
+  }
+}
