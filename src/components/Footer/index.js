@@ -1,16 +1,14 @@
 import React from "react";
-import { Link } from "react-router-dom";
 
 import "./footer.scss";
 
-export default function Footer() {
-  return (
-    <footer id="main-footer">
-      <div className="footer-content">
-        <Link to="">All</Link>
-        <Link to="">To do</Link>
-        <Link to="">dones</Link>
-      </div>
-    </footer>
-  );
-}
+const Footer = () => (
+  <footer id="main-footer">
+    <div className="footer-content">
+      <span>All</span>
+      <span>To do</span>
+      <span>Dones</span>
+    </div>
+  </footer>
+);
+export default Footer;

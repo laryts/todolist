@@ -1,7 +1,12 @@
 import React, { Component } from "react";
+import Moment from "react-moment";
 import api from "../../services/api";
 
+import Loading from "../utils/Loading";
+import NewTodo from "./new";
+
 import "./list.scss";
+import "./new.scss";
 
 import more from "../../assets/more.svg";
 
@@ -9,6 +14,10 @@ class List extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      _id: "",
+      description: "",
+      edit: false,
+      loading: true,
       list: []
     };
   }
@@ -16,14 +25,31 @@ class List extends Component {
   async componentDidMount() {
     const response = await api.get("todos");
 
-    this.setState({ list: response.data });
+    this.setState({ list: response.data, loading: false });
   }
+
+  handleChange = e => {
+    this.setState({ [e.target.name]: e.target.value });
+  };
+
+  handleSubmit = async e => {
+    e.preventDefault();
+
+    const newTodo = await api.post("todos", {
+      description: this.state.description
+    });
+
+    this.setState({
+      list: [...this.state.list, newTodo.data],
+      description: ""
+    });
+  };
 
   handleItemClick = ({ _id, description, done, createdAt }) => {
     // Checkbox update state
     this.setState({
       list: this.state.list.map(todo =>
-        todo._id === _id ? { _id, description, done: !done, createdAt } : todo
+        todo._id === _id ? { ...todo, done: !done } : todo
       )
     });
 
@@ -31,15 +57,25 @@ class List extends Component {
     api.put(`/todos/${_id}`, { done: !done });
   };
 
-  onSubmit = event => {
-    event.preventDefault();
+  handleEdit = (e, { _id, description }) => {
+    e.preventDefault();
+    // Send checkbox update to API
+    const newTodo = api.put(`/todos/${_id}`, {
+      description: this.state.description
+    });
 
-    if (this.state.term.length > 0) {
-      this.setState({
-        term: "",
-        list: [...this.state.list, { value: this.state.term, done: false }]
-      });
-    }
+    this.setState({
+      list: this.state.list.map(todo =>
+        todo._id === _id
+          ? { ...todo, description: this.state.description }
+          : todo
+      ),
+      edit: false
+    });
+  };
+
+  handleOpenEdit = id => {
+    this.setState({ edit: true, _id: id });
   };
 
   handleDelete = id => {
@@ -55,8 +91,22 @@ class List extends Component {
   render() {
     return (
       <section id="todo-list">
+        {this.state.loading ? <Loading /> : null}
+
+        <form id="new-task" onSubmit={this.handleSubmit}>
+          <input
+            type="text"
+            name="description"
+            placeholder="O que você não pode esquecer?"
+            onChange={this.handleChange}
+            value={this.state.description}
+          />
+          <button type="submit" className="btn btn-primary">
+            +
+          </button>
+        </form>
         <div className="list-group">
-          {this.state.list.map((todo, index) => (
+          {this.state.list.map(todo => (
             <div className="list-group-item" key={todo._id}>
               <div className="custom-control custom-checkbox d-flex w-100 justify-content-between pr-0">
                 <input
@@ -73,38 +123,59 @@ class List extends Component {
                   }`}
                   htmlFor={`checkTodo${todo._id}`}
                 >
-                  <div className="title-todo">{todo.description}</div>
-                  <small className="text-muted">{todo.createdAt}</small>
+                  {this.state.edit && this.state._id === todo._id ? (
+                    <input
+                      type="text"
+                      name="description"
+                      placeholder={todo.description}
+                      value={this.state.description}
+                      onChange={this.handleChange}
+                    />
+                  ) : (
+                    <div className="title-todo">{todo.description}</div>
+                  )}
+                  <Moment format="DD/MM/YYYY" className="text-muted">
+                    {todo.createdAt}
+                  </Moment>
                 </label>
-                <div className="dropdown">
+                {this.state.edit && this.state._id === todo._id ? (
                   <button
-                    className="btn btn-outline dropdown-toggle"
-                    type="button"
-                    id="dropdownMenuButton"
-                    data-toggle="dropdown"
-                    aria-haspopup="true"
-                    aria-expanded="false"
+                    onClick={e => this.handleEdit(e, todo)}
+                    className="btn btn-primary"
                   >
-                    <img src={more} alt="More options" />
+                    OK
                   </button>
-                  <div
-                    className="dropdown-menu dropdown-menu-right"
-                    aria-labelledby="dropdownMenuButton"
-                  >
+                ) : (
+                  <div className="dropdown">
                     <button
-                      onClick={() => this.handleEdit(todo._id)}
-                      className="dropdown-item"
+                      className="btn btn-outline dropdown-toggle"
+                      type="button"
+                      id="dropdownMenuButton"
+                      data-toggle="dropdown"
+                      aria-haspopup="true"
+                      aria-expanded="false"
                     >
-                      Editar
+                      <img src={more} alt="More options" />
                     </button>
-                    <button
-                      onClick={() => this.handleDelete(todo._id)}
-                      className="dropdown-item"
+                    <div
+                      className="dropdown-menu dropdown-menu-right"
+                      aria-labelledby="dropdownMenuButton"
                     >
-                      Remover
-                    </button>
+                      <button
+                        onClick={() => this.handleOpenEdit(todo._id)}
+                        className="dropdown-item"
+                      >
+                        Editar
+                      </button>
+                      <button
+                        onClick={() => this.handleDelete(todo._id)}
+                        className="dropdown-item"
+                      >
+                        Remover
+                      </button>
+                    </div>
                   </div>
-                </div>
+                )}
               </div>
             </div>
           ))}

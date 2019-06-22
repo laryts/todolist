@@ -1,0 +1,21 @@
+@import "../../App.scss";
+
+form#new-task {
+  @extend %centerbox;
+  padding: 10px;
+  input {
+    padding: 15px;
+    border-radius: 3px;
+    border: 1px solid #ccc;
+    width: 100%;
+  }
+  .btn-primary {
+    background: var(--hb-gradient);
+    margin: 5px;
+    padding: 10px;
+    border: none;
+    border-radius: 3px;
+    color: var(--light);
+    font-size: var(--fontsize-big);
+  }
+}
